@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import generics
-from order_manage.models import Order, Merchandise, MerchandisePicture, Location, Express
-from order_manage.serializers import UserSerializer, PermissionSerializer, GroupSerializer, OrderSerializer, MerchandiseSerializer, MerchandisePictureSerializer, LocationSerializer, ExpressSerializer
+from order_manage.models import Order, Merchandise, MerchandisePicture, Location, Express, Payment, OrderStatus
+from order_manage.serializers import UserSerializer, PermissionSerializer, GroupSerializer, OrderSerializer, MerchandiseSerializer, MerchandisePictureSerializer, LocationSerializer, ExpressSerializer, PaymentSerializer, OrderStatusSerializer
 # rest_framework的request和response解决了数据类型问题（json,xml）等
 # http://www.django-rest-framework.org/tutorial/2-requests-and-responses/
 # from django.http import HttpResponse, JsonResponse
@@ -39,12 +39,22 @@ class ExpressViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Express.objects.raw("""
-                    select id, code as value,
-                    name as label
-                    from order_manage_express
-                                  """)
+    queryset = Express.objects.all().extra(select={'value':'id', 'label':'name'})
     serializer_class = ExpressSerializer
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Payment.objects.all().extra(select={'value':'id', 'label':'name'})
+    serializer_class = PaymentSerializer
+
+class OrderStatusViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = OrderStatus.objects.all().extra(select={'value':'id', 'label':'name'})
+    serializer_class = OrderStatusSerializer
 
 class MerchandiseViewSet(viewsets.ModelViewSet):
     """

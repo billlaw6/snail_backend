@@ -28,6 +28,8 @@ router.register(r'merchandises', views.MerchandiseViewSet)
 router.register(r'merchandise-pictures', views.MerchandisePictureViewSet)
 router.register(r'orders', views.OrderViewSet)
 router.register(r'expresses', views.ExpressViewSet)
+router.register(r'payments', views.PaymentViewSet)
+router.register(r'order-status', views.OrderStatusViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

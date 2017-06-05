@@ -69,31 +69,45 @@ class Express(models.Model):
         ordering = ('created_at',)
     def __str__(self):
         return self.name
-PAYMENT_CHOICES = (('hdfk', _('hdfk')),('zfb', _('zhifubao')),('wx', _('weixin')),)
 
-STATUS_CHOICES = (
-    ('0', _('xiadan')),
-    ('-1', _('chedan')),
-    ('1', _('yifahuo')),
-    ('2', _('yishouhuo')),
-    ('3', _('yijiesuan')),)
+class Payment(models.Model):
+    code = models.CharField(_('code'), unique=True, max_length=100)
+    name = models.CharField(_('name'), unique=True, max_length=100)
+    pinyin = models.CharField(max_length=50, blank=True, null=True)
+    is_active = models.BooleanField(_('is_active'), default=False)
+    description = models.TextField(_('description'), blank=True, null=True)
+    created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
+    class Meta:
+        ordering = ('created_at',)
+    def __str__(self):
+        return self.name
+
+class OrderStatus(models.Model):
+    code = models.CharField(_('code'), unique=True, max_length=100)
+    name = models.CharField(_('name'), unique=True, max_length=100)
+    pinyin = models.CharField(max_length=50, blank=True, null=True)
+    is_active = models.BooleanField(_('is_active'), default=False)
+    description = models.TextField(_('description'), blank=True, null=True)
+    created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
+    class Meta:
+        ordering = ('created_at',)
+    def __str__(self):
+        return self.name
 
 class Order(models.Model):
     title = models.CharField(max_length=100, blank=True, default='')
     merchandise = models.ForeignKey(Merchandise, related_name = _('order_merchandise'), blank=False, null=False)
     amount = models.PositiveSmallIntegerField(_('amount'), null=False, default=1)
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2, default=0.00)
-    payment = models.CharField(_('payment'), choices=PAYMENT_CHOICES, default='', max_length=50)
+    payment = models.ForeignKey(Payment, related_name = _('order_payment'), to_field='code', blank=False, null=False)
     buyer = models.CharField(_('buyer'), max_length=100, blank=False, null=False, default='zhangsan')
     cell_phone = models.CharField(_('cell_phone'), max_length=15, null=True, blank=True )
-    state = models.CharField(_('state'), max_length=50, blank=True, default='')
-    city = models.CharField(_('city'), max_length=50, blank=True, default='')
-    region = models.CharField(_('region'), max_length=50, blank=True, default='')
+    city = models.CharField(_('city'), max_length=200, blank=False, null=False)
     address = models.CharField(_('address'), max_length=300, blank=False, default='')
     comment = models.CharField(_('comment'), max_length=300, blank=True, default='')
-    status = models.CharField(_('status'), choices=STATUS_CHOICES, default='', max_length=5)
+    status = models.ForeignKey(OrderStatus, related_name = _('order_status'), default=0, blank=False, null=False)
     created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
-    express = models.ForeignKey(Express, related_name = _('express_company'), blank=True, null=True)
+    express = models.ForeignKey(Express, related_name = _('express_company'), to_field='code', null=True)
     express_no = models.CharField(_('express_no'), default='', max_length=50, blank=True, null=True)
     express_info = models.TextField(_('express_info'), blank=True, null=True)
 

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group, Permission
 from rest_framework import serializers
-from order_manage.models import Order, Merchandise, MerchandisePicture, Location, Express
+from order_manage.models import Order, Merchandise, MerchandisePicture, Location, Express, Payment, OrderStatus
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,10 +20,20 @@ class GroupSerializer(serializers.ModelSerializer):
         model = Group
         fields = ('id', 'url', 'name')
 
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ('id', 'code', 'name', 'pinyin',)
+
+class OrderStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderStatus
+        fields = ('id', 'code', 'name', 'pinyin',)
+
 class ExpressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Express
-        fields = ('id', 'code', 'name', 'pinyin', 'label', 'value',)
+        fields = ('id', 'code', 'name', 'pinyin',)
 
 class MerchandiseSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
@@ -46,8 +56,8 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('id', 'title', 'merchandise', 'amount', 'price', 'payment',
-                  'buyer', 'cell_phone', 'state', 'city', 'region', 'address',
-                 'comment', 'status', 'created_at', 'express_no',
+                  'buyer', 'cell_phone', 'city', 'address',
+                 'comment', 'status', 'created_at', 'express', 'express_no',
                   'express_info', 'url', )
 
 class LocationSerializer(serializers.ModelSerializer):
