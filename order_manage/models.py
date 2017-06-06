@@ -1,10 +1,6 @@
 from django.db import models
-from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters.html import HtmlFormatter
 from pygments import highlight
@@ -14,13 +10,17 @@ class Merchandise(models.Model):
     name = models.CharField(_('name'), unique=True, max_length=100)
     pinyin = models.CharField(max_length=50, blank=True, null=True)
     brand = models.CharField(_('brand'), max_length=50, null=True, blank=True)
-    price = models.DecimalField(_('price'), max_digits=9, decimal_places=2, default=0.00)
-    old_price = models.DecimalField(_('old_price'), max_digits=9, decimal_places=2, blank=True, default=0.00)
+    price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
+                                default=0.00)
+    old_price = models.DecimalField(_('old_price'), max_digits=9,
+                                    decimal_places=2, blank=True, default=0.00)
     is_active = models.BooleanField(_('is_active'), default=False)
     is_bestseller = models.BooleanField(_('is_bestseller'), default=False)
     description = models.TextField(_('description'), blank=True, null=True)
-    meta_keywords = models.CharField(_('meta keywords'), max_length=255, help_text=_('Comma-delimited set of SEO keywords for meta tag'), blank=True, null=True)
-    meta_description = models.CharField(_('meta description'), max_length=255, help_text=_('Content for description meta tag'), blank=True, null=True)
+    meta_keywords = models.CharField(_('meta keywords'), max_length=255,
+                                     help_text=_('Comma-delimited set of SEO keywords for meta tag'), blank=True, null=True)
+    meta_description = models.CharField(_('meta description'), max_length=255,
+                                        help_text=_('Content for description meta tag'), blank=True, null=True)
     manufacturer = models.CharField(_('manufacturer'), max_length=300, blank=True)
     created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated_at'), auto_now=True)
@@ -51,12 +51,13 @@ class MerchandisePicture(models.Model):
     name = models.CharField(_('name'), unique=True, max_length=100)
     pinyin = models.CharField(max_length=50, blank=True, null=True)
     image = models.ImageField(_('image'), upload_to='merchandise_photo', blank=True)
+    order = models.PositiveSmallIntegerField(_('order'), null=False, default=1)
     description = models.TextField(_('description'), blank=True, null=True)
     created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
     class Meta:
-        ordering = ('created_at',)
+        ordering = ('merchandise', 'order', )
     def __str__(self):
-        return self.name
+        return self.merchandise.name + '-' + self.name
 
 class Express(models.Model):
     code = models.CharField(_('code'), unique=True, max_length=100)
@@ -95,7 +96,7 @@ class OrderStatus(models.Model):
         return self.name
 
 class Order(models.Model):
-    title = models.CharField(max_length=100, blank=True, default='')
+    title = models.CharField(max_length=100, unique=True, blank=True, default='')
     merchandise = models.ForeignKey(Merchandise, related_name = _('order_merchandise'), blank=False, null=False)
     amount = models.PositiveSmallIntegerField(_('amount'), null=False, default=1)
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2, default=0.00)
@@ -110,9 +111,11 @@ class Order(models.Model):
     express = models.ForeignKey(Express, related_name = _('express_company'), to_field='code', null=True)
     express_no = models.CharField(_('express_no'), default='', max_length=50, blank=True, null=True)
     express_info = models.TextField(_('express_info'), blank=True, null=True)
-
     class Meta:
         ordering = ('created_at',)
+        index_together = ['title','created_at','express_no']
+    def __str__(self):
+        return self.title + '-' + self.merchandise.name + '-' + str(self.amount)
 
 class Location(models.Model):
     country_region_code = models.CharField(_('country_region_code'), max_length=10)
@@ -151,8 +154,9 @@ class VisitLog(models.Model):
     longitude = models.FloatField(_('longitude'), null=True, blank=True)
     latitude = models.FloatField(_('latitude'), null=True, blank=True)
     class Meta:
-        verbose_name = _('TourLog')
-        verbose_name_plural = _('TourLogs')
+        ordering = ('visit_date', 'from_ip',)
+        verbose_name = _('VisitLog')
+        verbose_name_plural = _('VisitLogs')
     def __str__(self):
-        return self.user.username+self.location.country_region_name
+        return self.user.username + '-' + self.from_ip + '-' + self.visit_date
 
