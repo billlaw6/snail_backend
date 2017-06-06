@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User, Group, Permission
 from rest_framework import serializers
 from order_manage.models import Merchandise, MerchandisePicture, Location, \
-    Express, Payment, OrderStatus
+    Express, Payment, OrderStatus, Order
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -75,21 +75,30 @@ class OrderSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     title = serializers.CharField(required=True, allow_blank=False,
                                   max_length=100)
-    merchandise = serializers.CharField(required=True, allow_blank=False)
+    merchandise = serializers.ModelField(model_field=Merchandise()._meta.get_field('id'))
     amount = serializers.IntegerField()
     price = serializers.DecimalField(max_digits=9, decimal_places=2,
                                      default=0.00)
-    payment = serializers.CharField(required=True, allow_blank=False)
+    payment = serializers.ModelField(model_field=Payment()._meta.get_field('code'))
     buyer = serializers.CharField(max_length=100, allow_blank=False)
     cell_phone = serializers.RegexField(
         # '^0\d{2,3}\d{7,8}$|^1[358]\d{9}$|^147\d{8}', max_length=11,
         '^1[3|4|5|8][0-9]\d{4,8}$', max_length=11,
         allow_blank=True)
-    city = serializers.CharField(max_length=200, allow_blank=False)
+    city = serializers.ListField(child=serializers.CharField(max_length=200))
     address = serializers.CharField(max_length=300, allow_blank=False)
     comment = serializers.CharField(max_length=300, allow_blank=True)
-    status = serializers.CharField(default=1)
+    # status = serializers.CharField(default=1)
     created_at = serializers.DateTimeField(required=False)
-    express = serializers.CharField()
+    express = serializers.ModelField(model_field=Express()._meta.get_field('code'))
     express_no = serializers.CharField(max_length=50, allow_blank=True)
     express_info = serializers.CharField(allow_blank=True)
+
+    def create(self, validated_data):
+        """
+        Create and return a new 'Order' instance, given the validated data.
+        """
+        validated_data['merchandise'] = Merchandise.objects.get(pk=validated_data['merchandise'])
+        validated_data['payment'] = Payment.objects.filter(code=validated_data['payment'])[0]
+        validated_data['express'] = Express.objects.filter(code=validated_data['express'])[0]
+        return Order.objects.create(**validated_data)
