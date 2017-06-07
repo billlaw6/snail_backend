@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+import json
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters.html import HtmlFormatter
 from pygments import highlight
@@ -54,7 +55,7 @@ class Merchandise(models.Model):
 
 class MerchandisePicture(models.Model):
     merchandise = models.ForeignKey(Merchandise, related_name=_('pictures'),
-                                    blank=False, null=False)
+                                    blank=False, null=False, on_delete=models.CASCADE)
     name = models.CharField(_('name'), unique=True, max_length=100)
     pinyin = models.CharField(max_length=50, blank=True, null=True)
     image = models.ImageField(_('image'), upload_to='merchandise_photo',
@@ -150,6 +151,13 @@ class Order(models.Model):
 
     def __str__(self):
         return self.title + '-' + self.merchandise.name + '-' + str(self.amount)
+
+    def save(self, *args, **kwargs):
+        """
+        city字段array型数据单独处理
+        """
+        city = json.dumps(self.city)
+        super(Order, self).save(*args, **kwargs)
 
 
 class Location(models.Model):

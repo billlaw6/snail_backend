@@ -72,8 +72,8 @@ class LocationSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     # merchandise = serializers.CharField(source='merchandise.name')
     # payment = serializers.ReadOnlyField(source='payment.name')
-    express = serializers.ReadOnlyField(source='express.name')
-    status = serializers.ReadOnlyField(source='status.name')
+    # express = serializers.ReadOnlyField(source='express.name')
+    # status = serializers.ReadOnlyField(source='status.name')
 
     class Meta:
         model = Order
@@ -82,7 +82,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class MerchandiseSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    pictures = serializers.StringRelatedField(many=True)
+    # pictures = serializers.StringRelatedField(many=True)
+    pictures = serializers.StringRelatedField(many=True, queryset=MerchandisePicture.objects.all())
     # 订单列表以__str__返回结果显示
     orders = serializers.StringRelatedField(many=True)
     # 订单列表以pk列表显示，用queryset限定修改时可选的范围
