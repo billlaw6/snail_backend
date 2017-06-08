@@ -81,9 +81,10 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class MerchandiseSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    # pictures = serializers.StringRelatedField(many=True)
-    pictures = serializers.StringRelatedField(many=True, queryset=MerchandisePicture.objects.all())
+    # owner = serializers.ReadOnlyField(source='owner.username')
+    pictures = serializers.StringRelatedField(many=True)
+    # pictures = serializers.StringRelatedField(
+    #     many=True, queryset=MerchandisePicture.objects.all())
     # 订单列表以__str__返回结果显示
     orders = serializers.StringRelatedField(many=True)
     # 订单列表以pk列表显示，用queryset限定修改时可选的范围

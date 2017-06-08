@@ -3,7 +3,6 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
-import json
 # rest_framework的request和response解决了数据类型问题（json,xml）等
 # http://www.django-rest-framework.org/tutorial/2-requests-and-responses/
 # from django.http import HttpResponse, JsonResponse
@@ -119,7 +118,7 @@ def get_user_permissions(request, format=None):
 @api_view(['POST'])
 def add_order(request, format=None):
     data = request.data
-    data['city'] = json.dumps(data['city'])
+    data['city'] = ','.join(data['city'])
     print(data['merchandise'])
     # data['merchandise'] = Merchandise.objects.get(pk=data['merchandise'])
     print(data)

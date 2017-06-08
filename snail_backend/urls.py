@@ -38,4 +38,5 @@ urlpatterns = [
     url(r'^get-token/', rest_views.obtain_auth_token),
     url(r'^', include(router.urls)),
     url(r'^', include('order_manage.urls')),
+    url(r'^', include('utils.urls')),
 ]
