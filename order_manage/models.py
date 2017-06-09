@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-import json
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters.html import HtmlFormatter
 from pygments import highlight
@@ -55,7 +54,8 @@ class Merchandise(models.Model):
 
 class MerchandisePicture(models.Model):
     merchandise = models.ForeignKey(Merchandise, related_name=_('pictures'),
-                                    blank=False, null=False, on_delete=models.CASCADE)
+                                    blank=False, null=False,
+                                    on_delete=models.CASCADE)
     name = models.CharField(_('name'), unique=True, max_length=100)
     pinyin = models.CharField(max_length=50, blank=True, null=True)
     image = models.ImageField(_('image'), upload_to='merchandise_photo',
@@ -137,7 +137,7 @@ class Order(models.Model):
     comment = models.CharField(_('comment'), max_length=300, blank=True,
                                default='')
     status = models.ForeignKey(OrderStatus, related_name=_('orders'),
-                               default=0, blank=False, null=False)
+                               default=1)
     created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
     express = models.ForeignKey(Express, related_name=_('orders'),
                                 to_field='code', null=True)
@@ -152,12 +152,12 @@ class Order(models.Model):
     def __str__(self):
         return self.title + '-' + self.merchandise.name + '-' + str(self.amount)
 
-    def save(self, *args, **kwargs):
-        """
-        city字段array型数据单独处理
-        """
-        city = json.dumps(self.city)
-        super(Order, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     """
+    #     city字段array型数据单独处理
+    #     """
+    #     city = json.dumps(self.city)
+    #     super(Order, self).save(*args, **kwargs)
 
 
 class Location(models.Model):
@@ -191,12 +191,12 @@ class Location(models.Model):
         _('city_code'),
         max_length=10,
         null=True,
-     blank=True)
+        blank=True)
     city_name = models.CharField(
         _('city_name'),
         max_length=30,
         null=True,
-     blank=True)
+        blank=True)
     city_py_code = models.CharField(
         _('city_py_code'),
         max_length=100, null=True, blank=True)
@@ -243,7 +243,7 @@ class VisitLog(models.Model):
         _('browser'),
         max_length=64,
         null=True,
-     blank=True)
+        blank=True)
     longitude = models.FloatField(_('longitude'), null=True, blank=True)
     latitude = models.FloatField(_('latitude'), null=True, blank=True)
 
