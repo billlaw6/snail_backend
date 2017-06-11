@@ -8,12 +8,13 @@ from rest_framework import status
 # from django.http import HttpResponse, JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
+from rest_framework.decorators import detail_route, list_route
 from order_manage.models import Order, Merchandise, MerchandisePicture,\
     Location, Express, Payment, OrderStatus
 from order_manage.serializers import UserSerializer, PermissionSerializer, \
     GroupSerializer, OrderSerializer, MerchandiseSerializer, \
     MerchandisePictureSerializer, LocationSerializer, ExpressSerializer, \
-    PaymentSerializer, OrderStatusSerializer
+    PaymentSerializer, OrderStatusSerializer, OrderListSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -88,10 +89,24 @@ class MerchandisePictureViewSet(viewsets.ModelViewSet):
 
 class OrderViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint that allows orders to be viewed or edited.
     """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+
+    @list_route()
+    def my_orders(self, request):
+        # orders = Order.objects.all().order('-created_at')
+        orders = Order.objects.all()
+
+        page = self.paginate_queryset(orders)
+        if page is not None:
+            serializer = OrderListSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = OrderListSerializer(orders, many=True)
+        return Response(serializer.data)
+
 
 
 class LocationViewSet(viewsets.ModelViewSet):

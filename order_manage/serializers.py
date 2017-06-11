@@ -80,6 +80,20 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class OrderListSerializer(serializers.ModelSerializer):
+    """
+    For main order list page
+    """
+    merchandise = serializers.CharField(source='merchandise.name')
+    payment = serializers.ReadOnlyField(source='payment.name')
+    express = serializers.ReadOnlyField(source='express.name')
+    status = serializers.ReadOnlyField(source='status.name')
+
+    class Meta:
+        model = Order
+        fields = '__all__'
+
+
 class MerchandiseSerializer(serializers.ModelSerializer):
     # owner = serializers.ReadOnlyField(source='owner.username')
     pictures = serializers.StringRelatedField(many=True)
