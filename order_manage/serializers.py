@@ -54,11 +54,10 @@ class ExpressSerializer(serializers.ModelSerializer):
 
 
 class MerchandisePictureSerializer(serializers.ModelSerializer):
-    merchandise = serializers.ReadOnlyField(source='merchandise.name')
 
     class Meta:
         model = MerchandisePicture
-        fields = ('id', 'name', 'pinyin', 'description', 'created_at',
+        fields = ('id', 'name', 'pinyin', 'description', 'image',
                   'merchandise', 'url')
 
 
@@ -96,9 +95,8 @@ class OrderListSerializer(serializers.ModelSerializer):
 
 class MerchandiseSerializer(serializers.ModelSerializer):
     # owner = serializers.ReadOnlyField(source='owner.username')
-    pictures = serializers.StringRelatedField(many=True)
-    # pictures = serializers.StringRelatedField(
-    #     many=True, queryset=MerchandisePicture.objects.all())
+    # pictures = serializers.StringRelatedField(many=True)
+    pictures = MerchandisePictureSerializer(many=True, read_only=True)
     # 订单列表以__str__返回结果显示
     orders = serializers.StringRelatedField(many=True)
     # 订单列表以pk列表显示，用queryset限定修改时可选的范围

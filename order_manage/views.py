@@ -8,13 +8,13 @@ from rest_framework import status
 # from django.http import HttpResponse, JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import list_route
 from order_manage.models import Order, Merchandise, MerchandisePicture,\
     Location, Express, Payment, OrderStatus
 from order_manage.serializers import UserSerializer, PermissionSerializer, \
     GroupSerializer, OrderSerializer, MerchandiseSerializer, \
     MerchandisePictureSerializer, LocationSerializer, ExpressSerializer, \
-    PaymentSerializer, OrderStatusSerializer, OrderListSerializer
+    PaymentSerializer, OrderStatusSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -91,22 +91,27 @@ class OrderViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows orders to be viewed or edited.
     """
-    queryset = Order.objects.all()
+    queryset = Order.objects.all().exclude(status=7)
     serializer_class = OrderSerializer
 
     @list_route()
-    def my_orders(self, request):
-        # orders = Order.objects.all().order('-created_at')
-        orders = Order.objects.all()
+    def filtered_orders(self, request):
+        # print(request.query_params)
+        page = request.query_params['page']
+        start = request.query_params['start']
+        end = request.query_params['end']
+        filter = request.query_params['filter']
+        orders = Order.objects.filter(created_at__gte=start,
+                                      created_at__lte=end,
+                                      title__icontains=filter).exclude(status=7)
 
         page = self.paginate_queryset(orders)
         if page is not None:
-            serializer = OrderListSerializer(page, many=True)
+            serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = OrderListSerializer(orders, many=True)
+        serializer = self.get_serializer(orders, many=True)
         return Response(serializer.data)
-
 
 
 class LocationViewSet(viewsets.ModelViewSet):
