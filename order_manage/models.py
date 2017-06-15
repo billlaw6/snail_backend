@@ -59,7 +59,7 @@ class MerchandisePicture(models.Model):
     name = models.CharField(_('name'), unique=True, max_length=100)
     pinyin = models.CharField(max_length=50, blank=True, null=True)
     image = models.ImageField(_('image'), upload_to='merchandise_photo',
-                              required =True)
+                              blank=False, null=False)
     order = models.PositiveSmallIntegerField(_('order'), null=False, default=1)
     description = models.TextField(_('description'), blank=True, null=True)
     created_at = models.DateTimeField(_('created_at'), auto_now_add=True)

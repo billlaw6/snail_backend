@@ -54,11 +54,14 @@ class ExpressSerializer(serializers.ModelSerializer):
 
 
 class MerchandisePictureSerializer(serializers.ModelSerializer):
+    # image = serializers.CharField()
+    image = serializers.ImageField(
+        max_length=1000, allow_empty_file=False, use_url=False)
 
     class Meta:
         model = MerchandisePicture
         fields = ('id', 'name', 'pinyin', 'description', 'image',
-                  'merchandise', 'url')
+                  'merchandise', 'order', 'url')
 
 
 class LocationSerializer(serializers.ModelSerializer):
