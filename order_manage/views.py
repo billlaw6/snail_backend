@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User, Permission, Group
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, \
+    IsAuthenticatedOrReadOnly
 from rest_framework import status
 # rest_framework的request和response解决了数据类型问题（json,xml）等
 # http://www.django-rest-framework.org/tutorial/2-requests-and-responses/
@@ -15,12 +17,14 @@ from order_manage.serializers import UserSerializer, PermissionSerializer, \
     GroupSerializer, OrderSerializer, MerchandiseSerializer, \
     MerchandisePictureSerializer, LocationSerializer, ExpressSerializer, \
     PaymentSerializer, OrderStatusSerializer
+from order_manage.permissions import IsAdminOrOwner
 
 
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+    permission_classes = (IsAdminUser,)
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
@@ -29,6 +33,7 @@ class PermissionViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    permission_classes = (IsAdminUser,)
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
 
@@ -37,6 +42,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    permission_classes = (IsAdminUser,)
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
@@ -45,6 +51,7 @@ class ExpressViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    permission_classes = (IsAuthenticated,)
     queryset = Express.objects.all().extra(select={'value': 'id',
                                                    'label': 'name'})
     serializer_class = ExpressSerializer
@@ -54,6 +61,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    permission_classes = (IsAuthenticated,)
     queryset = Payment.objects.all().extra(select={'value': 'id',
                                                    'label': 'name'})
     serializer_class = PaymentSerializer
@@ -63,6 +71,7 @@ class OrderStatusViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    permission_classes = (IsAuthenticated,)
     queryset = OrderStatus.objects.all().extra(select={'value': 'id',
                                                        'label': 'name'})
     serializer_class = OrderStatusSerializer
@@ -72,6 +81,7 @@ class MerchandiseViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Merchandise.objects.all()
     serializer_class = MerchandiseSerializer
 
@@ -83,6 +93,7 @@ class MerchandisePictureViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = MerchandisePicture.objects.all()
     serializer_class = MerchandisePictureSerializer
 
@@ -91,10 +102,12 @@ class OrderViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows orders to be viewed or edited.
     """
+    permission_classes = (IsAdminOrOwner,)
     queryset = Order.objects.all().exclude(status=7)
     serializer_class = OrderSerializer
 
     @list_route()
+    # @permission_classes(IsAdminOrOwner, DjangoModelPermissions, )
     def filtered_orders(self, request):
         # print(request.query_params)
         page = request.query_params['page']
@@ -118,17 +131,20 @@ class LocationViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
 
 
 @api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
 def get_user_info(request, format=None):
     serializer = UserSerializer(request.user, context={'request': request})
     return Response(serializer.data)
 
 
 @api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
 def get_user_permissions(request, format=None):
     permissions = JSONRenderer().render(request.user.get_all_permissions(),
                                         context={'request': request})
