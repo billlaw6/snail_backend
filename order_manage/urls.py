@@ -5,6 +5,7 @@ from order_manage import views
 urlpatterns = [
     url(r'^user-info/$', views.get_user_info),
     url(r'^user-permissions/$', views.get_user_permissions),
+    url(r'^china/$', views.get_locations),
     url(r'^add_order/$', views.add_order),
 ]
 

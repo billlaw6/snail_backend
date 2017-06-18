@@ -13,6 +13,7 @@ def get_express_info(request, *args, **kwargs):
     company = request.data['company']
     postId = request.data['postId']
     url = "http://www.kuaidi100.com/query?type=%s&postid=%s" % (company, postId)
+    print(url)
     res = urllib.request.urlopen(url)  # 打开链接，请求快递数据
     content = res.read().decode("utf8")
     jsonObj = json.loads(content)

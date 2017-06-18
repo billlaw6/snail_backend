@@ -1,12 +1,14 @@
 # -*- encoding: utf-8 -*-
 import pypinyin
 import lxml.etree as etree
+import os
 from pypinyin import lazy_pinyin
 from order_manage.models import Location
 
 def load_locations():
     """非业务操作，用于载入QQ上下载的全国城市字典表"""
-    tree = etree.ElementTree(file="/root/projects/snail_backend/utils/China.xml")
+    p_dir = os.path.dirname(os.path.abspath(__file__))
+    tree = etree.ElementTree(file=os.path.join(p_dir, "China.xml"))
     root = tree.getroot()
     count = 0
     crs = root.findall('CountryRegion')
@@ -144,3 +146,15 @@ def load_locations():
 
 
 
+def generate_iview_json():
+    countries = list(Location.objects.extra(select={'value': 'country_region_name', 'label': 'country_region_name', 'py': 'country_region_py_code'}).values('value', 'label', 'py').exclude(state_name='').distinct())
+    states = list(Location.objects.extra(select={'value': 'state_name', 'label': 'state_name', 'py': 'state_py_code'}).values('value', 'label', 'py').exclude(state_name='').distinct())
+    cities = list(Location.objects.extra(select={'value': 'city_name', 'label': 'city_name', 'py': 'city_py_code'}).values('value', 'label', 'py').exclude(city_name='').distinct())
+    for city in cities:
+        city['children'] = list(Location.objects.extra(select={'value': 'region_name', 'label': 'region_name', 'py': 'region_py_code'}).values('value', 'label', 'py').filter(city_name=city['value']).distinct())
+    for state in states:
+        state['children'] = list(Location.objects.extra(select={'value': 'city_name', 'label': 'city_name', 'py': 'city_py_code'}).values('value', 'label', 'py').filter(state_name=state['value']).distinct())
+    for country in countries:
+        country['children'] = list(Location.objects.extra(select={'value': 'state_name', 'label': 'state_name', 'py': 'state_py_code'}).values('value', 'label', 'py').filter(country_region_name=country['value']).distinct())
+    city_json = JSONRenderer().render(countries)
+    print(city_json)

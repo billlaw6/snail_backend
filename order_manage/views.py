@@ -11,6 +11,8 @@ from rest_framework import status
 # from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import list_route
+import json
+from django.core import serializers
 from order_manage.models import Order, Merchandise, MerchandisePicture,\
     Location, Express, Payment, OrderStatus
 from order_manage.serializers import UserSerializer, PermissionSerializer, \
@@ -86,6 +88,7 @@ class MerchandiseViewSet(viewsets.ModelViewSet):
     serializer_class = MerchandiseSerializer
 
     def perform_create(self, serializer):
+        print('creating')
         serializer.save(owner=self.request.user)
 
 
@@ -107,7 +110,6 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
     @list_route()
-    # @permission_classes(IsAdminOrOwner, DjangoModelPermissions, )
     def filtered_orders(self, request):
         # print(request.query_params)
         page = request.query_params['page']
@@ -167,4 +169,21 @@ def add_order(request, format=None):
         print(serializer.errors)
         for x in data:
             print("%s: %s" % (data[x], type(data[x])))
-        return Response('asldkasd')
+        return Response('data invalid')
+
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly, ))
+def get_locations(request, format=None):
+    states = list(Location.objects.extra(select={'value': 'state_name', 'label': 'state_name', 'py': 'state_py_code'}).values('value', 'label', 'py').exclude(state_name='').distinct())
+    for state in states:
+        cities = list(Location.objects.exclude(city_name='').extra(select={'value': 'city_name', 'label': 'city_name', 'py': 'city_py_code'}).values('value', 'label', 'py').filter(state_name=state['value']).distinct())
+        if len(cities) > 0:
+            state['children'] = cities
+            for city in state['children']:
+                regions = list(Location.objects.exclude(region_name='').extra(select={'value': 'region_name', 'label': 'region_name', 'py': 'region_py_code'}).values('value', 'label', 'py').filter(city_name=city['value']).distinct())
+                if len(regions) > 0:
+                    city['children'] = regions
+                    print(city['children'])
+    city_json = JSONRenderer().render(states)
+    return Response(city_json)

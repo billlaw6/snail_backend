@@ -97,11 +97,11 @@ class OrderListSerializer(serializers.ModelSerializer):
 
 
 class MerchandiseSerializer(serializers.ModelSerializer):
-    # owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.ReadOnlyField(source='owner.username')
     # pictures = serializers.StringRelatedField(many=True)
     pictures = MerchandisePictureSerializer(many=True, read_only=True)
     # 订单列表以__str__返回结果显示
-    orders = serializers.StringRelatedField(many=True)
+    orders = serializers.StringRelatedField(many=True, read_only=True)
     # 订单列表以pk列表显示，用queryset限定修改时可选的范围
     # orders = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     # orders = serializers.PrimaryKeyRelatedField(
