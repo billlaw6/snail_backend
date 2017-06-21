@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User, Group, Permission
 from rest_framework import serializers
+from snail_backend import settings
 from order_manage.models import Merchandise, MerchandisePicture, Location, \
     Express, Payment, OrderStatus, Order
 
@@ -57,6 +58,10 @@ class MerchandisePictureSerializer(serializers.ModelSerializer):
     # image = serializers.CharField()
     image = serializers.ImageField(
         max_length=1000, allow_empty_file=False, use_url=False)
+    created_at = serializers.DateTimeField(
+        format=settings.DATETIME_FORMAT,
+        required=False,
+        read_only=True)
 
     class Meta:
         model = MerchandisePicture
@@ -76,6 +81,10 @@ class OrderSerializer(serializers.ModelSerializer):
     # payment = serializers.ReadOnlyField(source='payment.name')
     # express = serializers.ReadOnlyField(source='express.name')
     # status = serializers.ReadOnlyField(source='status.name')
+    created_at = serializers.DateTimeField(
+        format=settings.DATETIME_FORMAT,
+        required=False,
+        read_only=True)
 
     class Meta:
         model = Order
@@ -102,6 +111,12 @@ class MerchandiseSerializer(serializers.ModelSerializer):
     pictures = MerchandisePictureSerializer(many=True, read_only=True)
     # 订单列表以__str__返回结果显示
     orders = serializers.StringRelatedField(many=True, read_only=True)
+    end_datetime = serializers.DateTimeField(
+        format=settings.DATETIME_FORMAT)
+    created_at = serializers.DateTimeField(
+        format=settings.DATETIME_FORMAT,
+        required=False,
+        read_only=True)
     # 订单列表以pk列表显示，用queryset限定修改时可选的范围
     # orders = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     # orders = serializers.PrimaryKeyRelatedField(
@@ -116,6 +131,6 @@ class MerchandiseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Merchandise
         fields = ('id', 'name', 'pinyin', 'brand', 'price', 'old_price',
-                  'is_active', 'is_bestseller', 'description', 'meta_keywords',
-                  'meta_description', 'created_at', 'owner', 'url', 'pictures',
-                  'orders',)
+                  'is_active', 'is_bestseller', 'end_datetime', 'description',
+                  'meta_keywords', 'meta_description', 'created_at', 'owner',
+                  'url', 'pictures', 'orders',)

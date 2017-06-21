@@ -149,3 +149,5 @@ CORS_ORIGIN_WHITELIST = (
 SITE_ROOT = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media/')
 MEDIA_URL = 'media/'
+# rest-framework serializers DateTimeField, 加上TZ能在iview组件中显示全时间
+DATETIME_FORMAT='%Y-%m-%dT%H:%M:%SZ'

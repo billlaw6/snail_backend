@@ -22,6 +22,12 @@ class IsAdminOrOwner(permissions.BasePermission):
     """
 
     def has_object_permission(self, request, view, obj):
+        # 所有用户都可以提交新订单
+        print(request.method)
+        if request.method == 'POST':
+            print(request.user)
+            return True
+
         if request.user.is_superuser:
             return True
 

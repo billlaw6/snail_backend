@@ -17,6 +17,8 @@ class Merchandise(models.Model):
                                     decimal_places=2, blank=True, default=0.00)
     is_active = models.BooleanField(_('is_active'), default=False)
     is_bestseller = models.BooleanField(_('is_bestseller'), default=False)
+    # end_datetime = models.DateTimeField(_('end_datetime'), default=timezone.datetime(2017, timezone.now().month+1, 19))
+    end_datetime = models.DateTimeField(_('end_datetime'), default=timezone.now)
     description = models.TextField(_('description'), blank=True, null=False, default='')
     meta_keywords = models.CharField(_('meta keywords'), max_length=255,
                                      help_text=_('Comma-delimited set of \
@@ -126,7 +128,7 @@ class Order(models.Model):
                                default='')
     status = models.ForeignKey(OrderStatus, related_name=_('orders'),
                                default=1)
-    created_at = models.DateTimeField(_('created_at'), default=timezone.now)
+    created_at = models.DateTimeField(_('created_at'), blank=True, default=timezone.now)
     express = models.ForeignKey(Express, related_name=_('orders'),
                                 to_field='code', null=False, default='')
     express_no = models.CharField(_('express_no'), max_length=50,
