@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group, Permission
 from rest_framework import serializers
 from snail_backend import settings
 from order_manage.models import Merchandise, MerchandisePicture, Location, \
-    Express, Payment, OrderStatus, Order
+    Express, Payment, OrderStatus, Order, Comment
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -105,12 +105,25 @@ class OrderListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    """
+    For main order list page
+    """
+    # 可增加字段，如何拼接字段以后探索
+    title = serializers.CharField(source='cell_phone')
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
 class MerchandiseSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     # pictures = serializers.StringRelatedField(many=True)
     pictures = MerchandisePictureSerializer(many=True, read_only=True)
-    # 订单列表以__str__返回结果显示
-    orders = serializers.StringRelatedField(many=True, read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
+    # # 订单列表以__str__返回结果显示
+    # orders = serializers.StringRelatedField(many=True, read_only=True)
     end_datetime = serializers.DateTimeField(
         format=settings.DATETIME_FORMAT)
     created_at = serializers.DateTimeField(
@@ -121,7 +134,7 @@ class MerchandiseSerializer(serializers.ModelSerializer):
     # orders = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     # orders = serializers.PrimaryKeyRelatedField(
     #     many=True, queryset=Order.objects.filter(status=7))
-    # orders = OrderSerializer(many=True, read_only=True)
+    orders = OrderSerializer(many=True, read_only=True)
     # orders = serializers.HyperlinkedRelatedField(
     #             many=True,
     #             read_only=True,
@@ -133,4 +146,4 @@ class MerchandiseSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'pinyin', 'brand', 'price', 'old_price',
                   'is_active', 'is_bestseller', 'end_datetime', 'description',
                   'meta_keywords', 'meta_description', 'created_at', 'owner',
-                  'url', 'pictures', 'orders',)
+                  'url', 'pictures', 'orders', 'comments', )

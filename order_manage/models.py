@@ -244,3 +244,20 @@ class VisitLog(models.Model):
 
     def __str__(self):
         return self.user.username + '-' + self.from_ip + '-' + self.visit_date
+
+
+class Comment(models.Model):
+    merchandise = models.ForeignKey(Merchandise, related_name=_('comments'),
+                                    blank=False, null=False,
+                                    on_delete=models.CASCADE)
+    cell_phone = models.CharField(_('cell_phone'), max_length=15, null=False, default='',
+                                  blank=True)
+    author = models.CharField(_('author'), max_length=100)
+    content = models.TextField(_('content'), blank=True, null=False, default='')
+    created_at = models.DateTimeField(_('created_at'), default=timezone.now)
+
+    class Meta:
+        ordering = ('created_at',)
+
+    def __str__(self):
+        return self.cell_phone + '-' + self.name + '-' + self.content

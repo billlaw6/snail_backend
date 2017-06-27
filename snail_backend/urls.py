@@ -33,6 +33,7 @@ router.register(r'orders', views.OrderViewSet)
 router.register(r'expresses', views.ExpressViewSet)
 router.register(r'payments', views.PaymentViewSet)
 router.register(r'order-status', views.OrderStatusViewSet)
+router.register(r'comments', views.CommentViewSet)
 
 schema_view = get_schema_view(title='Pasteben API')
 

@@ -14,11 +14,11 @@ from rest_framework.decorators import list_route
 import json
 from django.core import serializers
 from order_manage.models import Order, Merchandise, MerchandisePicture,\
-    Location, Express, Payment, OrderStatus
+    Location, Express, Payment, OrderStatus, Comment
 from order_manage.serializers import UserSerializer, PermissionSerializer, \
     GroupSerializer, OrderSerializer, MerchandiseSerializer, \
     MerchandisePictureSerializer, LocationSerializer, ExpressSerializer, \
-    PaymentSerializer, OrderStatusSerializer
+    PaymentSerializer, OrderStatusSerializer, CommentSerializer
 from order_manage.permissions import IsAdminOrOwner
 
 
@@ -187,3 +187,24 @@ def get_locations(request, format=None):
                     print(city['children'])
     city_json = JSONRenderer().render(states)
     return Response(city_json)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    queryset = Comment.objects.all().extra({'title': 'cell_phone',
+                                           'content': 'content'}
+                                           ).order_by('-created_at')
+    serializer_class = CommentSerializer
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticatedOrReadOnly, ))
+def get_comments(request, format=None):
+    comments = Comment.objects.all().extra(
+            select={'title': 'select cell_phone || " - " || name from order_manage_comment',
+                   'content': 'content'}
+                   ).order_by('-created_at')
+    comment_json = JSONRenderer().render(comments)
+    return Response(comment_json)
