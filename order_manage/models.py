@@ -42,6 +42,25 @@ class Merchandise(models.Model):
         return self.name
 
 
+class SubMerchandise(models.Model):
+    merchandise = models.ForeignKey(Merchandise,
+                                    related_name=_('submerchandise'),
+                                    blank=False, null=False,
+                                    on_delete=models.CASCADE)
+    name = models.CharField(_('name'), unique=True, max_length=100)
+    image = models.ImageField(_('image'), upload_to='merchandise_photo',
+                              blank=False, null=False)
+    description = models.TextField(_('description'), blank=True,
+                                   null=False, default='')
+    created_at = models.DateTimeField(_('created_at'), default=timezone.now)
+
+    class Meta:
+        ordering = ('merchandise', 'name', )
+
+    def __str__(self):
+        return self.merchandise.name + '-' + self.name
+
+
 class MerchandisePicture(models.Model):
     merchandise = models.ForeignKey(Merchandise, related_name=_('pictures'),
                                     blank=False, null=False,
