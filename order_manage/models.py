@@ -2,9 +2,9 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.utils import timezone
-from pygments.lexers import get_lexer_by_name
-from pygments.formatters.html import HtmlFormatter
-from pygments import highlight
+# from pygments.lexers import get_lexer_by_name
+# from pygments.formatters.html import HtmlFormatter
+# from pygments import highlight
 
 
 class Merchandise(models.Model):
@@ -16,8 +16,9 @@ class Merchandise(models.Model):
     old_price = models.DecimalField(_('old_price'), max_digits=9,
                                     decimal_places=2, blank=True, default=0.00)
     is_active = models.BooleanField(_('is_active'), default=False)
+    sold_amount = models.PositiveIntegerField(_('sold_amount'), null=False,
+                                              default=10000)
     is_bestseller = models.BooleanField(_('is_bestseller'), default=False)
-    # end_datetime = models.DateTimeField(_('end_datetime'), default=timezone.datetime(2017, timezone.now().month+1, 19))
     end_datetime = models.DateTimeField(_('end_datetime'), default=timezone.now)
     description = models.TextField(_('description'), blank=True, null=False, default='')
     meta_keywords = models.CharField(_('meta keywords'), max_length=255,
@@ -44,12 +45,16 @@ class Merchandise(models.Model):
 
 class SubMerchandise(models.Model):
     merchandise = models.ForeignKey(Merchandise,
-                                    related_name=_('submerchandise'),
+                                    related_name=_('submerchandises'),
                                     blank=False, null=False,
                                     on_delete=models.CASCADE)
     name = models.CharField(_('name'), unique=True, max_length=100)
     image = models.ImageField(_('image'), upload_to='merchandise_photo',
                               blank=False, null=False)
+    min_amount = models.PositiveSmallIntegerField(_('min_amount'), null=False,
+                                              default=1)
+    max_amount = models.PositiveSmallIntegerField(_('max_amount'), null=False,
+                                              default=10)
     description = models.TextField(_('description'), blank=True,
                                    null=False, default='')
     created_at = models.DateTimeField(_('created_at'), default=timezone.now)
@@ -126,20 +131,17 @@ class OrderStatus(models.Model):
 
 
 class Order(models.Model):
-    title = models.CharField(max_length=100, unique=True, blank=True,
+    order_no = models.CharField(max_length=30, unique=True, blank=True,
                              default='')
-    merchandise = models.ForeignKey(Merchandise, related_name=_(
-        'orders'), blank=False, null=False)
-    amount = models.PositiveSmallIntegerField(_('amount'), null=False,
-                                              default=1)
-    price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
-                                default=0.00)
+    sum_amount = models.DecimalField(_('sum_amount'), max_digits=9,
+                                     decimal_places=2, blank=False,
+                                     null=False, default=0.00)
     payment = models.ForeignKey(Payment, related_name=_('orders'),
                                 to_field='code', blank=False, null=False)
     buyer = models.CharField(_('buyer'), max_length=100, blank=False,
                              null=False, default='zhangsan')
-    cell_phone = models.CharField(_('cell_phone'), max_length=15, null=False, default='',
-                                  blank=True)
+    cell_phone = models.CharField(_('cell_phone'), max_length=15, null=False,
+                                  default='', blank=True)
     city = models.CharField(_('city'), max_length=200, blank=False, null=False)
     address = models.CharField(_('address'), max_length=300, blank=False,
                                default='')
@@ -156,10 +158,10 @@ class Order(models.Model):
 
     class Meta:
         ordering = ('created_at',)
-        index_together = ['title', 'created_at', 'express_no']
+        index_together = ['order_no', 'created_at', 'express_no']
 
     def __str__(self):
-        return self.title + '-' + self.merchandise.name + '-' + str(self.amount)
+        return self.order_no + '-' + self.buyer + '-' + str(self.cell_phone)
 
     # def save(self, *args, **kwargs):
     #     """
@@ -167,6 +169,17 @@ class Order(models.Model):
     #     """
     #     city = json.dumps(self.city)
     #     super(Order, self).save(*args, **kwargs)
+
+
+class OrderDetail(models.Model):
+    order = models.ForeignKey(Order, related_name=_(
+        'order_detail'), blank=False, null=False)
+    submerchandise = models.ForeignKey(SubMerchandise, related_name=_(
+        'orders'), blank=False, null=False)
+    amount = models.PositiveSmallIntegerField(_('amount'), null=False,
+                                              default=1)
+    price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
+                                default=0.00)
 
 
 class Location(models.Model):

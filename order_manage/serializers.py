@@ -68,20 +68,6 @@ class MerchandisePictureSerializer(serializers.ModelSerializer):
                   'merchandise', 'order', 'url')
 
 
-class SubMerchandiseSerializer(serializers.ModelSerializer):
-    # image = serializers.CharField()
-    image = serializers.ImageField(
-        max_length=1000, allow_empty_file=False, use_url=False)
-    created_at = serializers.DateTimeField(
-        format=settings.DATETIME_FORMAT,
-        required=False,
-        read_only=True)
-
-    class Meta:
-        model = SubMerchandise
-        fields = '__all__'
-
-
 class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -130,9 +116,24 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SubMerchandiseSerializer(serializers.ModelSerializer):
+    # image = serializers.CharField()
+    orders = OrderSerializer(many=True, read_only=True)
+    image = serializers.ImageField(
+        max_length=1000, allow_empty_file=False, use_url=False)
+    created_at = serializers.DateTimeField(
+        format=settings.DATETIME_FORMAT,
+        required=False,
+        read_only=True)
+
+    class Meta:
+        model = SubMerchandise
+        fields = '__all__'
+
+
 class MerchandiseSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    # pictures = serializers.StringRelatedField(many=True)
+    submerchandises = SubMerchandiseSerializer(many=True, read_only=True)
     pictures = MerchandisePictureSerializer(many=True, read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
     # # 订单列表以__str__返回结果显示
@@ -147,7 +148,6 @@ class MerchandiseSerializer(serializers.ModelSerializer):
     # orders = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     # orders = serializers.PrimaryKeyRelatedField(
     #     many=True, queryset=Order.objects.filter(status=7))
-    orders = OrderSerializer(many=True, read_only=True)
     # orders = serializers.HyperlinkedRelatedField(
     #             many=True,
     #             read_only=True,
@@ -159,4 +159,4 @@ class MerchandiseSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'pinyin', 'brand', 'price', 'old_price',
                   'is_active', 'is_bestseller', 'end_datetime', 'description',
                   'meta_keywords', 'meta_description', 'created_at', 'owner',
-                  'url', 'pictures', 'orders', 'comments', )
+                  'url', 'pictures', 'comments', 'submerchandises',)
