@@ -133,7 +133,9 @@ class OrderStatus(models.Model):
 class Order(models.Model):
     order_no = models.CharField(max_length=30, unique=True, blank=True,
                              default='')
-    sum_amount = models.DecimalField(_('sum_amount'), max_digits=9,
+    sum_amount = models.PositiveSmallIntegerField(_('sum_amount'), null=False,
+                                              default=0)
+    sum_price = models.DecimalField(_('sum_price'), max_digits=9,
                                      decimal_places=2, blank=False,
                                      null=False, default=0.00)
     payment = models.ForeignKey(Payment, related_name=_('orders'),
