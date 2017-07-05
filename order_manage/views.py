@@ -14,11 +14,12 @@ from rest_framework.decorators import list_route
 import json
 from django.core import serializers
 from order_manage.models import Order, Merchandise, MerchandisePicture,\
-    Location, Express, Payment, OrderStatus, Comment
+    Location, Express, Payment, OrderStatus, Comment, SubMerchandise
 from order_manage.serializers import UserSerializer, PermissionSerializer, \
     GroupSerializer, OrderSerializer, MerchandiseSerializer, \
     MerchandisePictureSerializer, LocationSerializer, ExpressSerializer, \
-    PaymentSerializer, OrderStatusSerializer, CommentSerializer
+    PaymentSerializer, OrderStatusSerializer, CommentSerializer, \
+    SubMerchandiseSerializer
 from order_manage.permissions import IsAdminOrOwner
 
 
@@ -99,6 +100,15 @@ class MerchandisePictureViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = MerchandisePicture.objects.all()
     serializer_class = MerchandisePictureSerializer
+
+
+class SubMerchandiseViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    queryset = SubMerchandise.objects.all()
+    serializer_class = SubMerchandiseSerializer
 
 
 class OrderViewSet(viewsets.ModelViewSet):
