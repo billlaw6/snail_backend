@@ -98,13 +98,13 @@ def write_xml():
                 createVar['cti' + str(city.id)].set('QuanPin', city.city_quanpin)
                 districts = District.objects.filter(city_id=city.id)
                 for district in districts:
-                    createVar['dt' + str(district.id)] = etree.SubElement(createVar['cti' + str(city.id)], 'district')
+                    createVar['dt' + str(district.id)] = etree.SubElement(createVar['cti' + str(city.id)], 'District')
                     createVar['dt' + str(district.id)].set('Name', district.district_name)
                     createVar['dt' + str(district.id)].set('Code', district.district_code)
                     createVar['dt' + str(district.id)].set('PY_Code', district.district_py_code)
                     createVar['dt' + str(district.id)].set('QuanPin', district.district_quanpin)
-                    createVar['dt' + str(district.id)].set('Lon', district.longitude)
-                    createVar['dt' + str(district.id)].set('Lat', district.latitude)
+                    createVar['dt' + str(district.id)].set('Lon', str(district.longitude))
+                    createVar['dt' + str(district.id)].set('Lat', str(district.latitude))
     tree = etree.ElementTree(root)
     tree.write('China_custom.xml', pretty_print=True, xml_declaration=True,
                encoding='utf-8')

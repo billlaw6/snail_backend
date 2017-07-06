@@ -165,7 +165,6 @@ def load_all_locations():
                 country_region_name = cr.get('Name'),\
                 longitude = cr.get('Lon'),\
                 latitude = cr.get('Lat'),\
-                country_region_name = cr.get('Name'),\
                 country_region_py_code = ''.join(lazy_pinyin(cr.get('Name'), style=pypinyin.FIRST_LETTER)),\
                 country_region_quanpin = ''.join(lazy_pinyin(cr.get('Name')))\
             )
