@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Location>
-	<CountryRegion Name="中国" Code="1">
+	<Country Name="中国" Code="1">
 		<Province Name="北京市" >
 
 			<City Name="北京市" >
@@ -3962,5 +3962,5 @@
 				<District Name="澎湖县" Lon="119.58" Lat="23.58"/>
 			</City>
 		</Province>
-	</CountryRegion>
+	</Country>
 </Location>

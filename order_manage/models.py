@@ -269,8 +269,8 @@ class AllLocation(models.Model):
     country_region_quanpin = models.CharField(
         _('country_region_quanpin'),
         max_length=200, null=False, default='', blank=True)
-    state_code = models.CharField(
-        _('state_code'),
+    province_code = models.CharField(
+        _('province_code'),
         max_length=10,
         null=False, default='',
         blank=True)
@@ -320,7 +320,7 @@ class AllLocation(models.Model):
         max_length=200, null=False, default='', blank=True)
 
     class Meta:
-        verbose_name = _('Location')
+        verbose_name = _('AllLocation')
         verbose_name_plural = _('AllLocations')
         index_together = [
             'country_region_name',

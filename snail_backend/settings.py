@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'order_manage.apps.OrderManageConfig',
+    'utils.apps.UtilsConfig',
 ]
 
 MIDDLEWARE = [
