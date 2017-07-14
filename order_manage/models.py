@@ -49,6 +49,8 @@ class SubMerchandise(models.Model):
                                     blank=False, null=False,
                                     on_delete=models.CASCADE)
     name = models.CharField(_('name'), unique=True, max_length=100)
+    price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
+                                default=0.00)
     image = models.ImageField(_('image'), upload_to='merchandise_photo',
                               blank=False, null=False)
     min_amount = models.PositiveSmallIntegerField(_('min_amount'), null=False,
@@ -131,7 +133,7 @@ class OrderStatus(models.Model):
 
 
 class Order(models.Model):
-    order_no = models.CharField(max_length=30, unique=True, blank=True,
+    order_no = models.CharField(max_length=50, unique=True, blank=True,
                              default='')
     sum_amount = models.PositiveSmallIntegerField(_('sum_amount'), null=False,
                                               default=0)
@@ -182,6 +184,8 @@ class OrderDetail(models.Model):
                                               default=1)
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
                                 default=0.00)
+    created_at = models.DateTimeField(_('created_at'), blank=True,
+                                      default=timezone.now)
 
 
 class Location(models.Model):

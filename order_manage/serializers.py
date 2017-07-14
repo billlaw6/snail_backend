@@ -2,7 +2,7 @@ from django.contrib.auth.models import User, Group, Permission
 from rest_framework import serializers
 from snail_backend import settings
 from order_manage.models import Merchandise, MerchandisePicture, Location, \
-    Express, Payment, OrderStatus, Order, Comment, SubMerchandise
+    Express, Payment, OrderStatus, Order, Comment, SubMerchandise, OrderDetail
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -75,11 +75,23 @@ class LocationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class OrderDetailSerializer(serializers.ModelSerializer):
+    """
+    """
+    created_at = serializers.DateTimeField(
+        format=settings.DATETIME_FORMAT,
+        required=False,
+        read_only=True)
+
+    class Meta:
+        model = OrderDetail
+        fields = '__all__'
+
+
 class OrderSerializer(serializers.ModelSerializer):
-    # merchandise = serializers.CharField(source='merchandise.name')
-    # payment = serializers.ReadOnlyField(source='payment.name')
-    # express = serializers.ReadOnlyField(source='express.name')
-    # status = serializers.ReadOnlyField(source='status.name')
+    # order_detail = serializers.PrimaryKeyRelatedField(
+    #     many=True, queryset=OrderDetail.objects.all())
+    order_detail = OrderDetailSerializer(many=True, read_only=True)
     created_at = serializers.DateTimeField(
         format=settings.DATETIME_FORMAT,
         required=False,
@@ -118,7 +130,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class SubMerchandiseSerializer(serializers.ModelSerializer):
     # image = serializers.CharField()
-    orders = OrderSerializer(many=True, read_only=True)
+    orders = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Order.objects.all())
     image = serializers.ImageField(
         max_length=1000, allow_empty_file=False, use_url=False)
     created_at = serializers.DateTimeField(

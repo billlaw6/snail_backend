@@ -11,15 +11,17 @@ from rest_framework import status
 # from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import list_route
-import json
+import uuid
+from django.db import transaction
 from django.core import serializers
 from order_manage.models import Order, Merchandise, MerchandisePicture,\
-    Location, Express, Payment, OrderStatus, Comment, SubMerchandise
+    Location, Express, Payment, OrderStatus, Comment, SubMerchandise, \
+    OrderDetail
 from order_manage.serializers import UserSerializer, PermissionSerializer, \
     GroupSerializer, OrderSerializer, MerchandiseSerializer, \
     MerchandisePictureSerializer, LocationSerializer, ExpressSerializer, \
     PaymentSerializer, OrderStatusSerializer, CommentSerializer, \
-    SubMerchandiseSerializer
+    SubMerchandiseSerializer, OrderDetailSerializer
 from order_manage.permissions import IsAdminOrOwner
 
 
@@ -148,6 +150,15 @@ class LocationViewSet(viewsets.ModelViewSet):
     serializer_class = LocationSerializer
 
 
+class OrderDetailViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    queryset = OrderDetail.objects.all()
+    serializer_class = OrderDetailSerializer
+
+
 @api_view(['GET'])
 @permission_classes((IsAuthenticated, ))
 def get_user_info(request, format=None):
@@ -166,20 +177,29 @@ def get_user_permissions(request, format=None):
 @api_view(['POST'])
 def add_order(request, format=None):
     data = request.data
-    data['city'] = ','.join(data['city'])
-    print(data['merchandise'])
-    # data['merchandise'] = Merchandise.objects.get(pk=data['merchandise'])
+    data['order_no'] = str(uuid.uuid4())
     print(data)
-    serializer = OrderSerializer(data=data)
-    if serializer.is_valid():
-        print('valid')
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
-        print(serializer.errors)
-        for x in data:
-            print("%s: %s" % (data[x], type(data[x])))
-        return Response('data invalid')
+    with transaction.atomic():
+        order_serializer = OrderSerializer(data=data)
+        if order_serializer.is_valid():
+            new_order = order_serializer.save()
+            print(data['orderDetail'])
+            for value in data['orderDetail']:
+                print(value)
+                if value > 0:
+                    detail_data = {}
+                    # detail_data['submerchandise'] = index
+                    # detail_data['amount'] = value
+                    # detail_data['order'] = new_order
+                    # detail_data['price'] = SubMerchandise.objects.get(index).price
+                    order_detail_serializer = OrderDetailSerializer(data=detail_data)
+                    order_detail_serializer.save()
+            return Response(order_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            print(order_serializer.errors)
+            for x in data:
+                print("%s: %s" % (data[x], type(data[x])))
+            return Response('data invalid')
 
 
 @api_view(['GET'])
@@ -194,7 +214,7 @@ def get_locations(request, format=None):
                 regions = list(Location.objects.exclude(region_name='').extra(select={'value': 'region_name', 'label': 'region_name', 'py': 'region_py_code'}).values('value', 'label', 'py').filter(city_name=city['value']).distinct())
                 if len(regions) > 0:
                     city['children'] = regions
-                    print(city['children'])
+                    # print(city['children'])
     city_json = JSONRenderer().render(states)
     return Response(city_json)
 
