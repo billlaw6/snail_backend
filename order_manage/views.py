@@ -184,16 +184,21 @@ def add_order(request, format=None):
         if order_serializer.is_valid():
             new_order = order_serializer.save()
             print(data['orderDetail'])
+            i = 0
             for value in data['orderDetail']:
+                i += 1
                 print(value)
                 if value > 0:
                     detail_data = {}
-                    # detail_data['submerchandise'] = index
-                    # detail_data['amount'] = value
-                    # detail_data['order'] = new_order
-                    # detail_data['price'] = SubMerchandise.objects.get(index).price
+                    detail_data['submerchandise'] = i - 1
+                    detail_data['amount'] = value
+                    detail_data['order'] = new_order.id
+                    detail_data['price'] = SubMerchandise.objects.get(id=i-1).price
                     order_detail_serializer = OrderDetailSerializer(data=detail_data)
-                    order_detail_serializer.save()
+                    if order_detail_serializer.is_valid():
+                        order_detail_serializer.save()
+                    else:
+                        print(order_detail_serializer.errors)
             return Response(order_serializer.data, status=status.HTTP_201_CREATED)
         else:
             print(order_serializer.errors)

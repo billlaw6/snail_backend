@@ -163,6 +163,7 @@ class Order(models.Model):
     class Meta:
         ordering = ('created_at',)
         index_together = ['order_no', 'created_at', 'express_no']
+        unique_together = (('cell_phone', 'address', 'comment'))
 
     def __str__(self):
         return self.order_no + '-' + self.buyer + '-' + str(self.cell_phone)
