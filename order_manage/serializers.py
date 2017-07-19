@@ -106,7 +106,6 @@ class OrderListSerializer(serializers.ModelSerializer):
     """
     For main order list page
     """
-    merchandise = serializers.CharField(source='merchandise.name')
     payment = serializers.ReadOnlyField(source='payment.name')
     express = serializers.ReadOnlyField(source='express.name')
     status = serializers.ReadOnlyField(source='status.name')

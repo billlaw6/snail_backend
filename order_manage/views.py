@@ -130,7 +130,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         filter = request.query_params['filter']
         orders = Order.objects.filter(created_at__gte=start,
                                       created_at__lte=end,
-                                      title__icontains=filter).exclude(status=7)
+                                      order_no__icontains=filter).exclude(status=7)
 
         page = self.paginate_queryset(orders)
         if page is not None:
