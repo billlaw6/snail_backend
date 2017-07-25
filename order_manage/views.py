@@ -193,6 +193,7 @@ def add_order(request, format=None):
                     detail_data['submerchandise'] = i - 1
                     detail_data['amount'] = value
                     detail_data['order'] = new_order.id
+                    detail_data['name'] = SubMerchandise.objects.get(id=i-1).name
                     detail_data['price'] = SubMerchandise.objects.get(id=i-1).price
                     order_detail_serializer = OrderDetailSerializer(data=detail_data)
                     if order_detail_serializer.is_valid():

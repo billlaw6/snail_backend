@@ -129,8 +129,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class SubMerchandiseSerializer(serializers.ModelSerializer):
     # image = serializers.CharField()
-    orders = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Order.objects.all())
+    order_details = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=OrderDetail.objects.all())
     image = serializers.ImageField(
         max_length=1000, allow_empty_file=False, use_url=False)
     created_at = serializers.DateTimeField(

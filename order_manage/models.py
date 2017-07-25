@@ -180,7 +180,8 @@ class OrderDetail(models.Model):
     order = models.ForeignKey(Order, related_name=_(
         'order_detail'), blank=False, null=False)
     submerchandise = models.ForeignKey(SubMerchandise, related_name=_(
-        'orders'), blank=False, null=False)
+        'order_details'), blank=False, null=False)
+    name = models.CharField(_('name'), max_length=100)
     amount = models.PositiveSmallIntegerField(_('amount'), null=False,
                                               default=1)
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
