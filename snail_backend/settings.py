@@ -60,7 +60,7 @@ ROOT_URLCONF = 'snail_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['snail_frontend'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

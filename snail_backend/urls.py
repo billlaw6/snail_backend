@@ -46,7 +46,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
     url(r'^get-token/', rest_views.obtain_auth_token),
-    url(r'^', include(router.urls)),
-    url(r'^', include('order_manage.urls')),
-    url(r'^', include('utils.urls')),
+    url(r'^api/', include(router.urls)),
+    url(r'^order/', include('order_manage.urls')),
+    url(r'^utils/', include('utils.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

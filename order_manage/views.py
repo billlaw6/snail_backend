@@ -23,7 +23,12 @@ from order_manage.serializers import UserSerializer, PermissionSerializer, \
     PaymentSerializer, OrderStatusSerializer, CommentSerializer, \
     SubMerchandiseSerializer, OrderDetailSerializer
 from order_manage.permissions import IsAdminOrOwner
+from django.shortcuts import render
 
+
+def frontend_root(request):
+    template_file = ''
+    return render(request, '')
 
 class UserViewSet(viewsets.ModelViewSet):
     """
