@@ -21,6 +21,7 @@ from rest_framework.schemas import get_schema_view
 from django.conf.urls.static import static
 from django.conf import settings
 from order_manage import views
+from django.views.generic.base import TemplateView
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
@@ -47,6 +48,8 @@ urlpatterns = [
                                namespace='rest_framework')),
     url(r'^get-token/', rest_views.obtain_auth_token),
     url(r'^api/', include(router.urls)),
-    url(r'^order/', include('order_manage.urls')),
+    url(r'^/', include('order_manage.urls')),
     url(r'^utils/', include('utils.urls')),
+    # 前端页面根地址
+    url(r'^$', TemplateView.as_view(template_name="index.html")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

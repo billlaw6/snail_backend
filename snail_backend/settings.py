@@ -60,7 +60,7 @@ ROOT_URLCONF = 'snail_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['snail_frontend'],
+        'DIRS': ['snail_frontend/dist'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,7 +123,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+STATIC_ROOT = '/snail_frontend/dist/'
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'snail_frontend/dist/static/'),
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -151,4 +155,4 @@ SITE_ROOT = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media/')
 MEDIA_URL = 'media/'
 # rest-framework serializers DateTimeField, 加上TZ能在iview组件中显示全时间
-DATETIME_FORMAT='%Y-%m-%dT%H:%M:%SZ'
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'

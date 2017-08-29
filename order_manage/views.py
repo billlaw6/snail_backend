@@ -7,13 +7,11 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, \
 from rest_framework import status
 # rest_framework的request和response解决了数据类型问题（json,xml）等
 # http://www.django-rest-framework.org/tutorial/2-requests-and-responses/
-# from django.http import HttpResponse, JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.decorators import list_route
 import uuid
 from django.db import transaction
-from django.core import serializers
 from order_manage.models import Order, Merchandise, MerchandisePicture,\
     Location, Express, Payment, OrderStatus, Comment, SubMerchandise, \
     OrderDetail
@@ -23,12 +21,14 @@ from order_manage.serializers import UserSerializer, PermissionSerializer, \
     PaymentSerializer, OrderStatusSerializer, CommentSerializer, \
     SubMerchandiseSerializer, OrderDetailSerializer
 from order_manage.permissions import IsAdminOrOwner
-from django.shortcuts import render
+# from django.template import loader
+# from django.http import HttpResponse
 
 
-def frontend_root(request):
-    template_file = ''
-    return render(request, '')
+# def frontend_root(request):
+#     template = loader.get_template('index.html')
+#     return HttpResponse(template.render(request))
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
