@@ -153,12 +153,12 @@ class Order(models.Model):
                                default='')
     status = models.ForeignKey(OrderStatus, related_name=_('orders'),
                                default=1)
-    created_at = models.DateTimeField(_('created_at'), blank=True, default=timezone.now)
     express = models.ForeignKey(Express, related_name=_('orders'),
                                 to_field='code', null=False, default='')
     express_no = models.CharField(_('express_no'), max_length=50,
                                   blank=True, null=False, default='')
     express_info = models.TextField(_('express_info'), blank=True, null=False, default='')
+    created_at = models.DateTimeField(_('created_at'), blank=True, default=timezone.now)
 
     class Meta:
         ordering = ('created_at',)
