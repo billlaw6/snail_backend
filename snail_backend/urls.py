@@ -44,11 +44,11 @@ schema_view = get_schema_view(title='Pasteben API')
 urlpatterns = [
     url(r'^schema/$', schema_view),
     url(r'^admin/', admin.site.urls),
-    url(r'^api/api-auth/', include('rest_framework.urls',
-                                   namespace='rest_framework')),
-    url(r'^api/get-token/', rest_views.obtain_auth_token),
-    url(r'^api/', include(router.urls)),
-    url(r'^api/', include('order_manage.urls')),
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
+    url(r'^get-token/', rest_views.obtain_auth_token),
+    url(r'^rest/', include(router.urls)),
+    url(r'^', include('order_manage.urls')),
     url(r'^utils/', include('utils.urls')),
     # 前端页面根地址
     url(r'^$', TemplateView.as_view(template_name="index.html")),

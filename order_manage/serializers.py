@@ -65,7 +65,7 @@ class MerchandisePictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = MerchandisePicture
         fields = ('id', 'name', 'pinyin', 'description', 'image',
-                  'merchandise', 'order', 'url')
+                  'merchandise', 'order', 'url', 'created_at')
 
 
 class LocationSerializer(serializers.ModelSerializer):
