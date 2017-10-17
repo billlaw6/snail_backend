@@ -87,6 +87,16 @@ class MerchandisePicture(models.Model):
         return self.merchandise.name + '-' + self.name
 
 
+class ExpressManager(models.Manager):
+    """
+    For serializer use
+    When you try to load this serialized data, Django will use the get_by_natural_key() method to resolve ["顺丰速递", "SunFengSuDi"] into the primary key of an actual Express object.
+    Deserialization of objects with no primary key will always check whether the model’s manager has a get_by_natural_key() method and if so, use it to populate the deserialized object’s primary key.
+    """
+    def get_by_natural_key(self, name, pinyin):
+        return self.get(name=name, pinyin=pinyin)
+
+
 class Express(models.Model):
     code = models.CharField(_('code'), unique=True, max_length=100)
     name = models.CharField(_('name'), unique=True, max_length=100)
@@ -95,8 +105,12 @@ class Express(models.Model):
     description = models.TextField(_('description'), blank=True, null=False, default='')
     created_at = models.DateTimeField(_('created_at'), default=timezone.now)
 
+    def natural_key(self):
+        return (relf.name + self.pinyin)
+
     class Meta:
         ordering = ('created_at',)
+        unique_together = (('name', 'pinyin'),)
 
     def __str__(self):
         return self.name
@@ -124,6 +138,9 @@ class OrderStatus(models.Model):
     is_active = models.BooleanField(_('is_active'), default=False)
     description = models.TextField(_('description'), blank=True, null=False, default='')
     created_at = models.DateTimeField(_('created_at'), default=timezone.now)
+
+    def natural_key(self):
+        return (self.name,) + self.pinyin
 
     class Meta:
         ordering = ('created_at',)
@@ -159,6 +176,10 @@ class Order(models.Model):
                                   blank=True, null=False, default='')
     express_info = models.TextField(_('express_info'), blank=True, null=False, default='')
     created_at = models.DateTimeField(_('created_at'), blank=True, default=timezone.now)
+
+    def natural_key(self):
+        return self.order_no + '-' + self.buyer + '-' + str(self.cell_phone)
+    natural_key.dependencies = ['order_manage.Express']
 
     class Meta:
         ordering = ('created_at',)

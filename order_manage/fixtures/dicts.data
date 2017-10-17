@@ -1,0 +1,36 @@
+[
+    {
+        "model": "order_manage.Express",
+        "pk": 1,
+        "fields": {
+            "code": "shunfeng",
+            "name": "顺丰速递",
+            "pinyin": "sun feng su di",
+            "is_active": "True",
+            "description": "",
+        }
+    },
+    {
+        "model": "order_manage.Express",
+        "pk": 2,
+        "fields": {
+            "code": "tiantian",
+            "name": "天天快递",
+            "pinyin": "tian tian kuai di",
+            "is_active": "True",
+            "description": "",
+        }
+    },
+    {
+        "model": "order_manage.Express",
+        "pk": 3,
+        "fields": {
+            "code": "huitongkuaidi",
+            "name": "汇通快递",
+            "pinyin": "hui tong kuai di",
+            "is_active": "True",
+            "description": "",
+        }
+    }
+]
+
